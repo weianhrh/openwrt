@@ -1,0 +1,48 @@
+name: OpenWRT Build QCA9533
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clean up disk space
+        run: |
+          docker rmi $(docker images -q) || true
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android
+          sudo apt update && sudo apt full-upgrade -y
+
+      - name: Checkout openwrt (包含 .config)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone OpenWRT source code
+        run: |
+          git clone https://github.com/openwrt/openwrt.git
+          cp .config openwrt/.config
+
+      - name: Setup build environment
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev gawk git subversion libssl-dev gettext zlib1g-dev swig unzip time rsync
+
+      - name: Update and install feeds
+        run: |
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Build firmware
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          make -j$(nproc) || make -j1 V=s
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: openwrt-firmware
+          path: openwrt/bin/targets/
