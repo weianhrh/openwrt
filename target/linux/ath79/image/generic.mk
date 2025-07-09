@@ -1718,9 +1718,6 @@ define Device/glinet_gl-ar150
   DEVICE_MODEL := GL-AR150
   DEVICE_PACKAGES := kmod-usb-chipidea2
   IMAGE_SIZE := 16000k
-  IMAGES := sysupgrade.bin factory.bin
-  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | append-metadata
-  IMAGE/factory.bin := append-rootfs | pad-rootfs | tplink-v1-image -C GL-AR150 -H 0x43410001
   SUPPORTED_DEVICES += gl-ar150
 endef
 TARGET_DEVICES += glinet_gl-ar150
