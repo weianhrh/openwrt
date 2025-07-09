@@ -2021,12 +2021,21 @@ define Device/letv_lba-047-ch
   IMAGE_SIZE := 15936k
   LOADER_FLASH_OFFS := 0x50000
   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
-  IMAGES += kernel.bin rootfs.bin
+
+  IMAGES += kernel.bin rootfs.bin sysupgrade.bin factory.bin
+
   IMAGE/kernel.bin := append-loader-okli-uimage $(1) | pad-to 64k
   IMAGE/rootfs.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | check-size $$$$(FACTORY_SIZE)
+
+  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | append-metadata
+
+  IMAGE/factory.bin := append-kernel | pad-to 64k | append-rootfs | pad-rootfs | \
+	tplink-v1-image -C LBA-047-CH -H 0x4f4b4c49
 endef
+
 TARGET_DEVICES += letv_lba-047-ch
+
 
 define Device/librerouter_librerouter-v1
   SOC := qca9558
