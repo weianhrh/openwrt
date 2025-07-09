@@ -2022,7 +2022,7 @@ define Device/letv_lba-047-ch
   LOADER_FLASH_OFFS := 0x50000
   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
 
-  IMAGES += kernel.bin rootfs.bin sysupgrade.bin factory.bin
+  IMAGES := kernel.bin rootfs.bin sysupgrade.bin factory.bin
 
   IMAGE/kernel.bin := append-loader-okli-uimage $(1) | pad-to 64k
   IMAGE/rootfs.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
